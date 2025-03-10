@@ -19,7 +19,7 @@ router.get('/', async (req, res) => {
 
 router.post('/', async (req, res) => {
     try {
-        const { title, descripcion, status = 'to do'} = req.body;
+        const { title, description, status = "to do"} = req.body;
 
         if (!title ) {
             return res.status(400).json({error: 'El titulo es obligatorio '});
@@ -27,12 +27,13 @@ router.post('/', async (req, res) => {
 
         const db = await connectDB();
         const result = await db.run(
-            'INSERT INTO tasks (title, descripcion, status) VALUES (?, ?, ?)',
-            [title, descripcion, status]
+            'INSERT INTO tasks (title, description, status) VALUES (?, ?, ?)',
+            [title, description, status]
         );
 
-        res.status(201).json({id: result.lastID, title, descripcion, status});
+        res.status(201).json({id: result.lastID, title, description, status});
     }catch(error) {
+        console.error("2 error",error);
         res.status(500).json({error: 'error al crear la tarea'});
     }
 });
@@ -41,7 +42,7 @@ router.post('/', async (req, res) => {
 
 router.put('/:id', async (req, res) => {
     try {
-        const { id } = res.params;
+        const { id } = req.params;
         const { title, description, status} = req.body;
 
         const db = await connectDB();
@@ -71,7 +72,7 @@ router.delete('/:id', async (req, res) =>{
          const db = await connectDB();
          const results  = await  db.run('DELETE FROM tasks WHERE id = ?', id);
 
-        if (results.change === 0 ){
+        if (results.changes === 0 ){
             return res.status(400).json({error: 'la tarea no existe'});
         }
 
